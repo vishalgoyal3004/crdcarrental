@@ -7,14 +7,21 @@ import { ThemeProvider } from "@emotion/react"
 import theme from "./theme"
 import { CssBaseline } from "@mui/material"
 import { BrowserRouter } from "react-router-dom"
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
 
 const root = ReactDOM.createRoot(document.getElementById("root"))
+const graphqlClient = new ApolloClient({
+  uri: 'http://localhost:4000/graphql',
+  cache: new InMemoryCache()
+})
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
+      <ApolloProvider client={graphqlClient}>
         <App />
+      </ApolloProvider>
       </BrowserRouter>
     </ThemeProvider>
   </React.StrictMode>

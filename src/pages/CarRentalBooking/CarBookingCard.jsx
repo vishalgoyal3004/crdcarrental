@@ -17,6 +17,8 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import VehicleDisplay from "../../components/VehicleDisplay"
 import AlertNotice from "../../components/AlertNotice"
+import { useQuery } from "@apollo/client"
+import { GET_CARTYPE, GET_LOCATION } from "../../queries"
 
 const carAvailability = {
   sedan: [
@@ -44,14 +46,16 @@ export default function CarBookingCard() {
   const [message, setMessage] = useState("")
   const [validationAlert, setValidationAlert] = useState(false)
   const [bookingView, setBookingView] = useState(false)
-  const carTypes = ["Sedan", "SUV", "Van"]
-  const locations = [
-    "Clane",
-    "Maynooth",
-    "Leixlip",
-    "Dublin Airport",
-    "SandyFord",
-  ]
+  const { data: locationData } = useQuery(GET_LOCATION) 
+  const { data: carTypeData } = useQuery(GET_CARTYPE) 
+  console.log('carTypeData',carTypeData)
+  const locOptions = locationData?.getAllLocation?.map((loc)=>{
+    return loc.name
+  })
+  const carTypeOptions = carTypeData?.getAllCarType?.map((type)=>{
+    return type.name
+  })
+
 
   const handleBookingView = () => {
     setBookingView((prev) => !prev)
@@ -81,7 +85,6 @@ export default function CarBookingCard() {
           (pickupTime <= booking.pickup && returnTime >= booking.return)
       )
     })
-    console.log("available car", availableCar)
 
     if (!availableCar) {
       setMessage(`No ${carModel}s are available for reservation.`)
@@ -117,7 +120,7 @@ export default function CarBookingCard() {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Autocomplete
-                  options={locations}
+                  options={locOptions}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -134,7 +137,7 @@ export default function CarBookingCard() {
               </Grid>
               <Grid item xs={12}>
                 <Autocomplete
-                  options={carTypes}
+                  options={carTypeOptions}
                   renderInput={(params) => (
                     <TextField
                       {...params}
